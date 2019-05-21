@@ -143,6 +143,7 @@ We need to turn the Ansible plays into a Docker image so that it can be deployed
 On the command line, navigate to the `mysql-operator` directory and build the test operator:
 ```bash
 cd $LAB/mysql-operator
+sed -i "s/BASEIMAGE/quay.io\/$QUAY_USER\/mysql-operator-test-intermediate/g" $LAB/mysql-operator/build/test-framework/Dockerfile
 operator-sdk build quay.io/$QUAY_USER/mysql-operator-test --enable-tests
 ```
 
@@ -221,7 +222,7 @@ First, we need to deploy a Jenkins instance to the widgetfactory project. Deploy
 oc new-app jenkins-ephemeral -p MEMORY_LIMIT=2Gi
 ```
 
-Your login credentials to Jenkins will be the same as your `$OCP_USER` and `$OCP_PASS` credentials.
+Your login credentials to Jenkins will be the same as your `$OCP_USER` and `r3dh4t1!` credentials.
 
 ### 7.2 Create the jenkins-agent-ansible Imagestream
 The WidgetFactory pipeline depends on a build agent called `jenkins-agent-ansible`. The agent will be used to run a playbook that deploys the WidgetFactory resources to the environment.
@@ -250,9 +251,11 @@ oc start-build widget-factory-pipeline
 
 To view the build's progress, expand `Builds` on the sidebar in the OpenShift UI and click `Builds` underneath that. Click on the widget-factory pipeline. You'll probably find that it is still pending and that there are no build logs displayed. This simply means that Jenkins is not ready yet, and when it is, the build will start and logs will display (you should see `View Logs` underneath the build number).
 
-Once you see the `View Logs` on the UI, you'll need to confirm the security exception and log into Jenkins. The credentials are the same as your OpenShift username and password.
+Click the `View Logs` link once it appears in the UI (it will appear under the build number). You'll need to confirm the security exception and log into Jenkins. The credentials are the same as your OpenShift username and password. Note that this may take a few minutes as Jenkins is running preliminary tasks.
 
-When the app started up, it persisted many different widgets to the MySQL instance we created earlier. Let's return our focus back to the Ansible operator to perform a data snapshot of the database.
+When you log into Jenkins, you should immediately be taken to the Jenkins build. This build is building the Java application with maven and deploying the WidgetFactory application with Ansible. You can expect this build to take around 5 minutes.
+
+When the app starts up, it persists many different widgets to the MySQL instance we created earlier. Let's return our focus back to the Ansible operator to perform a backup of the database.
 
 ## 8 Back up the MySQL Database
 ### 8.1 MysqlBackup Overview
